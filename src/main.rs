@@ -19,8 +19,6 @@ const MAINMENU: &str =
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
-     ||                                                                     || \n\r\
-     ||                                                                     || \n\r\
      ||     ▄▄▄▄▄    ▄   ██   █  █▀ ▄███▄        ▄▀  ██   █▀▄▀█ ▄███▄       || \n\r\
      ||     █     ▀▄   █  █ █  █▄█   █▀   ▀     ▄▀    █ █  █ █ █ █▀   ▀     || \n\r\
      ||   ▄  ▀▀▀▀▄ ██   █ █▄▄█ █▀▄   ██▄▄       █ ▀▄  █▄▄█ █ ▄ █ ██▄▄       || \n\r\
@@ -30,9 +28,11 @@ const MAINMENU: &str =
      ||                    ▀                           ▀                    || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
+     ||                                                                     || \n\r\
+     ||                               @~~~~~                                || \n\r\
+     ||                                                                     || \n\r\
+     ||                                                                     || \n\r\
      ||                    Press Space to Start the Game                    || \n\r\
-     ||                                                                     || \n\r\
-     ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
@@ -53,12 +53,12 @@ const GAME_SCREEN: &str =
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
-     ||                                 @~~~~~                              || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
-     ||                    Press arrow keys to start the game               || \n\r\
+     ||                               @~~~~~                                || \n\r\
+     ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
@@ -73,6 +73,7 @@ const GAME_SCREEN: &str =
 struct Game {
     state: State,
     current_screen: &'static str,
+    score: u8,
 }
 
 impl Game {
@@ -91,7 +92,7 @@ impl Game {
     fn change_state(&mut self) -> () {
         match self.state {
             State::MainMenu => {
-                self.state = State::AboutToStart;
+                self.state = State::Started;
                 self.current_screen = GAME_SCREEN;
                 self.display_screen()
             }
@@ -103,7 +104,6 @@ impl Game {
 // represents state of the game.
 enum State {
     MainMenu,
-    AboutToStart,
     Started,
     GameOver,
 }
@@ -113,6 +113,7 @@ fn main() {
     let mut game_handle = Game {
         state: State::MainMenu,
         current_screen: MAINMENU,
+        score: 0
     };
 
     // raw terminal output: user does not need to hit enter when giving input.
