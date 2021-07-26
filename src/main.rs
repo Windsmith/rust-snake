@@ -1,9 +1,10 @@
 extern crate termion;
 
-use std::fmt::write;
 use std::{
     char,
     io::{stdin, stdout, Read, Write},
+    fmt::write,
+    process,
 };
 use termion::{
     clear,
@@ -108,6 +109,30 @@ enum State {
     GameOver,
 }
 
+// Struct representing position coordinates of the terminal
+struct Coords {
+    x_pos: u8,
+    y_pos: u8
+}
+
+// Struct representing the Snake
+struct Snake {
+    position: Coords
+    body: vec![BodyParts]
+}
+
+// Struct representing the Snake's body parts
+struct BodyParts {
+    position: Coords
+}
+
+impl Snake {
+    // Change direction of the snake and its body parts
+    fn change_direction(direction: str) {
+        // change direction
+    }
+}
+
 fn main() {
     // game handler: manages game state and screen
     let mut game_handle = Game {
@@ -127,15 +152,34 @@ fn main() {
     // display the main screen when the program starts.
     game_handle.display_screen();
 
-    // check for keyboard input.
+    // check for general keyboard input.
+    // this set of inputs is for states outside the main game
     for key in input.keys() {
         match key.unwrap() {
             //quit the game if "q" is entered.
-            termion::event::Key::Char('q') => break,
+            termion::event::Key::Char('q') => process::exit(0x0100),
 
             //space key progresses the game.
-            termion::event::Key::Char(' ') => game_handle.change_state(),
+            termion::event::Key::Char(' ') => {
+                game_handle.change_state()
+                break
+            },
             _ => (),
         };
+    }
+
+    // check for game input.
+    // this set of inputs are for when the game has started
+    for key in input.keys() {
+        match key.unwrap() {
+            //quit the game if "q" is entered.
+            termion::event::Key::Char('q') => process::exit(0x0100),
+
+            //change direction of movement using arrow keys
+            termion::event::Key::Up => change_direction("up"),
+            termion::event::Key::Down => change_direction("down"),
+            termion::event::Key::Left => change_direction("left"),
+            termion::event::Key::Right => change_direction("right"),
+        }
     }
 }
