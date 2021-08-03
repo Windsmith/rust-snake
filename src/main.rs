@@ -82,8 +82,8 @@ impl Game {
     // only needs to be called at the game start. change_state() changes the screen on its own when the state
     // of the game is changed.
     fn display_screen(&mut self) -> () {
-        println!("{}", termion::clear::All);
-        println!("{}", termion::cursor::Goto(1, 1));
+        print!("{}", termion::clear::All);
+        print!("{}", termion::cursor::Goto(1, 1));
         println!("{0}{1}", color::Fg(color::Red), self.current_screen);
     }
 
@@ -111,37 +111,52 @@ enum State {
 
 // Struct representing position coordinates of the terminal
 struct Coords {
-    x_pos: u8,
-    y_pos: u8
+    x_pos: u16,
+    y_pos: u16,
 }
 
 // Struct representing the Snake's body parts
-struct BodyParts {
+struct BodyPart {
     position: Coords
 }
 
 // Struct representing the Snake
 struct Snake {
     position: Coords,
-    body: Vec<BodyParts>,
+    body: Vec<BodyPart>,
 }
 
 impl Snake {
     fn new() -> Snake {
         Snake {
-            position: Coords {x_pos: 25, y_pos: 25},
-            body: Vec::new()
+            position: Coords {x_pos: 33, y_pos: 16},
+            body: vec![
+                BodyPart {position: Coords {x_pos: 34, y_pos: 16}},
+                BodyPart {position: Coords {x_pos: 35, y_pos: 16}},
+                BodyPart {position: Coords {x_pos: 36, y_pos: 16}},
+                BodyPart {position: Coords {x_pos: 37, y_pos: 16}},
+                BodyPart {position: Coords {x_pos: 38, y_pos: 16}},
+            ]
         }
     }
 
     // Change direction of the snake and its body parts
-    fn change_direction(&self, direction: &str) {
+    fn change_direction(&mut self, direction: &str) {
         // change direction
     }
 
     // Move continously in a single direction
-    fn perpetually_move(&self, direction: &str) {
+    fn perpetually_move(&mut self, direction: &str) {
         // move perpetually
+    }
+
+    fn print_snake(&self) {
+        print!("{}", termion::cursor::Goto(self.position.x_pos, self.position.y_pos));
+        print!("@");
+        for part in &self.body {
+            print!("{}", termion::cursor::Goto(part.position.x_pos, part.position.y_pos));
+            print!("~");
+        }
     }
 }
 
@@ -150,7 +165,7 @@ fn main() {
     let mut game_handle = Game {
         state: State::MainMenu,
         current_screen: MAINMENU,
-        score: 0
+        score: 0,
     };
 
     let mut snake = Snake::new();
@@ -175,6 +190,7 @@ fn main() {
             //space key progresses the game.
             termion::event::Key::Char(' ') => {
                 game_handle.change_state();
+                snake.print_snake();
                 break
             },
             _ => (),
@@ -182,6 +198,8 @@ fn main() {
     }
 
     // stdin handle
+    // makes another one because the previous one is lost after moving into input.keys()
+    // TODO: find solution to avoid duplication
     let mut input = stdin();
 
     // check for game input.
