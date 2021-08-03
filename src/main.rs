@@ -115,21 +115,33 @@ struct Coords {
     y_pos: u8
 }
 
-// Struct representing the Snake
-struct Snake {
-    position: Coords
-    body: vec![BodyParts]
-}
-
 // Struct representing the Snake's body parts
 struct BodyParts {
     position: Coords
 }
 
+// Struct representing the Snake
+struct Snake {
+    position: Coords,
+    body: Vec<BodyParts>,
+}
+
 impl Snake {
+    fn new() -> Snake {
+        Snake {
+            position: Coords {x_pos: 25, y_pos: 25},
+            body: Vec::new()
+        }
+    }
+
     // Change direction of the snake and its body parts
-    fn change_direction(direction: str) {
+    fn change_direction(&self, direction: &str) {
         // change direction
+    }
+
+    // Move continously in a single direction
+    fn perpetually_move(&self, direction: &str) {
+        // move perpetually
     }
 }
 
@@ -141,12 +153,13 @@ fn main() {
         score: 0
     };
 
+    let mut snake = Snake::new();
+
     // raw terminal output: user does not need to hit enter when giving input.
     // just the presence of the output variable puts the terminal in raw mode.
     let mut output = stdout().into_raw_mode().unwrap();
 
     // stdin handle
-    // Not used anywhere right now, feel free to remove.
     let mut input = stdin();
 
     // display the main screen when the program starts.
@@ -161,12 +174,15 @@ fn main() {
 
             //space key progresses the game.
             termion::event::Key::Char(' ') => {
-                game_handle.change_state()
+                game_handle.change_state();
                 break
             },
             _ => (),
         };
     }
+
+    // stdin handle
+    let mut input = stdin();
 
     // check for game input.
     // this set of inputs are for when the game has started
@@ -176,10 +192,12 @@ fn main() {
             termion::event::Key::Char('q') => process::exit(0x0100),
 
             //change direction of movement using arrow keys
-            termion::event::Key::Up => change_direction("up"),
-            termion::event::Key::Down => change_direction("down"),
-            termion::event::Key::Left => change_direction("left"),
-            termion::event::Key::Right => change_direction("right"),
+            termion::event::Key::Up => snake.change_direction("up"),
+            termion::event::Key::Down => snake.change_direction("down"),
+            termion::event::Key::Left => snake.change_direction("left"),
+            termion::event::Key::Right => snake.change_direction("right"),
+
+            _ => (),
         }
     }
 }
