@@ -69,8 +69,6 @@ const GAME_SCREEN: &str =
      ||                                                                     || \n\r\
      =========================================================================";
 
-// struct that handles state of the game and the screen that has to be displayed
-// for the corresponding state.
 struct Game {
     state: State,
     current_screen: &'static str,
@@ -78,7 +76,6 @@ struct Game {
 }
 
 impl Game {
-    // display the current screen.
     // only needs to be called at the game start. change_state() changes the screen on its own when the state
     // of the game is changed.
     fn display_screen(&mut self) -> () {
@@ -87,7 +84,6 @@ impl Game {
         println!("{0}{1}", color::Fg(color::Red), self.current_screen);
     }
 
-    // change the state of the game depending on the state its currently at.
     // function will be called only when state needs to move forward, so it doesn't need any arguments.
     // function also updates the screen on its own, so only change_state() has to be called.
     fn change_state(&mut self) -> () {
@@ -102,25 +98,21 @@ impl Game {
     }
 }
 
-// represents state of the game.
 enum State {
     MainMenu,
     Started,
     GameOver,
 }
 
-// Struct representing position coordinates of the terminal
 struct Coords {
     x_pos: u16,
     y_pos: u16,
 }
 
-// Struct representing the Snake's body parts
 struct BodyPart {
     position: Coords
 }
 
-// Struct representing the Snake
 struct Snake {
     position: Coords,
     body: Vec<BodyPart>,
@@ -140,14 +132,16 @@ impl Snake {
         }
     }
 
-    // Change direction of the snake and its body parts
     fn change_direction(&mut self, direction: &str) {
         // change direction
     }
 
-    // Move continously in a single direction
     fn perpetually_move(&mut self, direction: &str) {
-        // move perpetually
+        match direction {
+            "up" => {
+                
+            }
+        }
     }
 
     fn print_snake(&self) {
@@ -161,7 +155,6 @@ impl Snake {
 }
 
 fn main() {
-    // game handler: manages game state and screen
     let mut game_handle = Game {
         state: State::MainMenu,
         current_screen: MAINMENU,
@@ -174,17 +167,14 @@ fn main() {
     // just the presence of the output variable puts the terminal in raw mode.
     let mut output = stdout().into_raw_mode().unwrap();
 
-    // stdin handle
     let mut input = stdin();
 
-    // display the main screen when the program starts.
     game_handle.display_screen();
 
     // check for general keyboard input.
     // this set of inputs is for states outside the main game
     for key in input.keys() {
         match key.unwrap() {
-            //quit the game if "q" is entered.
             termion::event::Key::Char('q') => process::exit(0x0100),
 
             //space key progresses the game.
@@ -197,7 +187,6 @@ fn main() {
         };
     }
 
-    // stdin handle
     // makes another one because the previous one is lost after moving into input.keys()
     // TODO: find solution to avoid duplication
     let mut input = stdin();
@@ -206,7 +195,6 @@ fn main() {
     // this set of inputs are for when the game has started
     for key in input.keys() {
         match key.unwrap() {
-            //quit the game if "q" is entered.
             termion::event::Key::Char('q') => process::exit(0x0100),
 
             //change direction of movement using arrow keys
