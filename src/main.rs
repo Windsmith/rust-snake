@@ -54,7 +54,7 @@ const GAME_SCREEN: &str =
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
-     ||                               @~~~~~                                || \n\r\
+     ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
      ||                                                                     || \n\r\
@@ -95,8 +95,8 @@ impl Game {
 
     fn exit_game(&mut self){
         print!("{}", termion::clear::All);
-        print!("{}", color::Fg(color::White));
         print!("{}", termion::cursor::Restore);
+        print!("{}", termion::cursor::Goto(1,1))
     }
 
 }
@@ -149,11 +149,10 @@ impl Snake {
     }
 
     fn print_snake(&self) {
-        print!("{}", termion::cursor::Goto(self.position.x_pos, self.position.y_pos));
-        print!("@");
+        //Not sure why, but print! doesn't work here. So println! is used although the newline is unnecessary
+        println!("{}@", termion::cursor::Goto(self.position.x_pos, self.position.y_pos));
         for part in &self.body {
-            print!("{}", termion::cursor::Goto(part.position.x_pos, part.position.y_pos));
-            print!("~");
+            println!("{}~", termion::cursor::Goto(part.position.x_pos, part.position.y_pos));
         }
     }
 }
@@ -187,7 +186,6 @@ fn main() {
             //space key progresses the game.
             termion::event::Key::Char(' ') => {
                 game_handle.change_state();
-                snake.print_snake();
                 break
             },
             _ => (),
@@ -197,6 +195,8 @@ fn main() {
     // makes another one because the previous one is lost after moving into input.keys()
     // TODO: find solution to avoid duplication
     let input = stdin();
+
+    snake.print_snake();
 
     // check for game input.
     // this set of inputs are for when the game has started
@@ -213,7 +213,7 @@ fn main() {
             termion::event::Key::Left => snake.change_direction("left"),
             termion::event::Key::Right => snake.change_direction("right"),
 
-            _ => (),
+            _ => print!("bro"),
         }
     }
 }
