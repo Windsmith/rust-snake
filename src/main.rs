@@ -1,14 +1,10 @@
 extern crate termion;
 
 use std::{
-    char,
-    io::{stdin, stdout, Read, Write},
-    fmt::write,
+    io::{stdin, stdout},
     process,
 };
 use termion::{
-    clear,
-    cursor::{self, HideCursor},
     raw::IntoRawMode,
 };
 use termion::{color, input::TermRead};
@@ -96,6 +92,13 @@ impl Game {
             _ => (),
         }
     }
+
+    fn exit_game(&mut self){
+        print!("{}", termion::clear::All);
+        print!("{}", color::Fg(color::White));
+        print!("{}", termion::cursor::Restore);
+    }
+
 }
 
 enum State {
@@ -141,6 +144,7 @@ impl Snake {
             "up" => {
                 
             }
+            _ => print!("bro")
         }
     }
 
@@ -165,9 +169,9 @@ fn main() {
 
     // raw terminal output: user does not need to hit enter when giving input.
     // just the presence of the output variable puts the terminal in raw mode.
-    let mut output = stdout().into_raw_mode().unwrap();
+    let _output = stdout().into_raw_mode().unwrap();
 
-    let mut input = stdin();
+    let input = stdin();
 
     game_handle.display_screen();
 
@@ -175,7 +179,10 @@ fn main() {
     // this set of inputs is for states outside the main game
     for key in input.keys() {
         match key.unwrap() {
-            termion::event::Key::Char('q') => process::exit(0x0100),
+            termion::event::Key::Char('q') => {
+                game_handle.exit_game();
+                return
+            }
 
             //space key progresses the game.
             termion::event::Key::Char(' ') => {
@@ -189,13 +196,16 @@ fn main() {
 
     // makes another one because the previous one is lost after moving into input.keys()
     // TODO: find solution to avoid duplication
-    let mut input = stdin();
+    let input = stdin();
 
     // check for game input.
     // this set of inputs are for when the game has started
     for key in input.keys() {
         match key.unwrap() {
-            termion::event::Key::Char('q') => process::exit(0x0100),
+            termion::event::Key::Char('q') => {
+                game_handle.exit_game();
+                return
+            }
 
             //change direction of movement using arrow keys
             termion::event::Key::Up => snake.change_direction("up"),
