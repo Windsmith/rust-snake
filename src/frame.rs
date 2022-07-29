@@ -1,7 +1,7 @@
 use crate::{COLS, ROWS};
 
 pub struct Frame {
-    frame: Vec<Vec<char>>
+    pub frame: Vec<Vec<char>>
 }
 
 impl Frame {
