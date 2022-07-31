@@ -34,6 +34,43 @@ impl Snake {
             direction: Direction::Left
         }
     }
+
+    pub fn move_snake(&mut self) {
+
+        let body_positions: Vec<(usize, usize)> = self.body.iter()
+                                                    .map(|part| (part.x, part.y))
+                                                    .collect();
+
+        for (index, body_part) in self.body.iter_mut().enumerate() {
+            if index == 0 {
+                body_part.x = self.x;
+                body_part.y = self.y;
+            }
+            else {
+                body_part.x = body_positions[index-1].0;
+                body_part.y = body_positions[index-1].1;
+            }
+        }
+
+        match self.direction {
+            Direction::Up => {
+                if self.y == 0 { self.y = 19 }
+                else { self.y -= 1 }
+            },
+            Direction::Down => {
+                if self.y == 19 { self.y = 0 }
+                else { self.y += 1 }
+            },
+            Direction::Left => {
+                if self.x == 0 { self.x = 79 }
+                else { self.x -= 1 }
+            }
+            Direction::Right => {
+                if self.x == 79 { self.x = 0 }
+                else { self.x += 1 }
+            }
+        }
+    }
 }
 
 impl TerminalDraw for Snake {
