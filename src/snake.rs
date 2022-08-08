@@ -4,7 +4,7 @@ pub struct Snake {
     x: usize,
     y: usize,
     body: Vec<BodyPart>,
-    direction: Direction 
+    pub direction: Direction 
 }
 
 struct BodyPart {
@@ -12,7 +12,8 @@ struct BodyPart {
     y: usize
 }
 
-enum Direction {
+#[derive(Copy, Clone)]
+pub enum Direction {
     Up,
     Down,
     Left,
@@ -70,6 +71,11 @@ impl Snake {
                 else { self.x += 1 }
             }
         }
+    }
+
+    pub fn change_dir(&mut self, dir: Direction)
+    {
+        self.direction = dir;
     }
 }
 
