@@ -43,7 +43,11 @@ fn main() -> Result<()> {
 
         while move_condition {
             let dir = direction_rx.recv_timeout(Duration::from_secs_f32(0.01)).unwrap_or(&snake_unlocked.direction);
-            snake_unlocked.direction = *dir;
+
+            if !(*dir == Direction::opposite_of(snake_unlocked.direction)) {
+                snake_unlocked.direction = *dir;
+            }
+            
             snake_unlocked.move_snake();
             renderer_unlocked.draw_object(&mut stdout, &*snake_unlocked);
             renderer_unlocked.render(&mut stdout);

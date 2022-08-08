@@ -12,12 +12,23 @@ struct BodyPart {
     y: usize
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Direction {
     Up,
     Down,
     Left,
     Right,
+}
+
+impl Direction {
+    pub fn opposite_of(dir: Direction) -> Direction {
+        match dir {
+            Direction::Up => Direction::Down,
+            Direction::Down => Direction::Up,
+            Direction::Left => Direction::Right,
+            Direction::Right => Direction::Left
+        }
+    }
 }
 
 impl Snake {
@@ -73,10 +84,15 @@ impl Snake {
         }
     }
 
-    pub fn change_dir(&mut self, dir: Direction)
-    {
-        self.direction = dir;
+    /* Obsolete
+    pub fn change_dir(&mut self, dir: &Direction)
+    {   
+        if !(*dir == Direction::opposite_of(self.direction)) {
+            self.direction = *dir;
+        }
+        
     }
+    */
 }
 
 impl TerminalDraw for Snake {
