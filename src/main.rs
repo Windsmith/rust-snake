@@ -31,6 +31,7 @@ fn main() -> Result<()> {
     let snake_cloned_ref = Arc::clone(&snake);
 
     //main game loop
+    
     let (render_tx, render_rx) = channel::unbounded();
     let (direction_tx, direction_rx) = channel::unbounded(); 
 
@@ -64,6 +65,7 @@ fn main() -> Result<()> {
                 //q to exit
                 KeyCode::Char('q') => break 'gameloop,
                 //space to start
+                
                 KeyCode::Char(' ') => {
                     if !game_start {
                         game_start = true;
@@ -90,18 +92,19 @@ fn main() -> Result<()> {
                         direction_tx.send(&Direction::Right).unwrap();
                     }
                 }
+                
                 _ => continue,
             }
         }
     }
-
-    //cleanup
     
+    //cleanup
     execute!(io::stdout(),
         Show,
         LeaveAlternateScreen)?;
     disable_raw_mode()?;
 
     return Result::Ok(());
+    
     
 }

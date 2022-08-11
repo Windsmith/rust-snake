@@ -28,6 +28,7 @@ impl Renderer {
                     
                 }
             }
+            self.current_frame = Frame {frame: frame.frame.clone()};
         } else {
             for (col_index, col) in self.current_frame.frame.iter().enumerate() {
                 for (row_index, row_charactor) in col.iter().enumerate() {
@@ -41,8 +42,8 @@ impl Renderer {
     }
 
     pub fn draw_object<T: TerminalDraw>(&mut self, stdout: &mut Stdout, obj: &T) {
-        let mut new_frame = Frame {frame: self.current_frame.frame.clone()};
+        let mut new_frame = Frame::new();
         obj.draw(&mut new_frame);
-        self.unrendered_frame = Some(new_frame);
+        self.unrendered_frame = Some(new_frame)
     }
 }
