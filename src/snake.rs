@@ -93,6 +93,28 @@ impl Snake {
         
     }
     */
+
+    pub fn get_xs(&self) -> Vec<usize> {
+        let mut x_vals = Vec::new();
+        x_vals.push(self.x);
+
+        for part in self.body.iter(){
+            x_vals.push(part.x);
+        }
+
+        x_vals
+    } 
+
+    pub fn get_ys(&self) -> Vec<usize> {
+        let mut y_vals = Vec::new();
+        y_vals.push(self.y);
+
+        for part in self.body.iter(){
+            y_vals.push(part.y);
+        }
+
+        y_vals
+    } 
 }
 
 impl TerminalDraw for Snake {

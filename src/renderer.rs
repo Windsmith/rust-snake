@@ -46,4 +46,11 @@ impl Renderer {
         obj.draw(&mut new_frame);
         self.unrendered_frame = Some(new_frame)
     }
+
+    pub fn draw_two_objects<T: TerminalDraw, U: TerminalDraw>(&mut self, stdout: &mut Stdout, obj1: &T, obj2: &U) {
+        let mut new_frame = Frame::new();
+        obj1.draw(&mut new_frame);
+        obj2.draw(&mut new_frame);
+        self.unrendered_frame = Some(new_frame)
+    }
 }

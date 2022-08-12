@@ -1,7 +1,7 @@
 use std::{io::{stdout, self}, convert::TryInto, thread, time::Duration, sync::{Arc, Mutex}};
 use crossterm::{execute, Result, terminal::{EnterAlternateScreen, LeaveAlternateScreen, enable_raw_mode, disable_raw_mode, size, SetSize, Clear}, event::{read, Event, KeyCode, KeyEvent}, style::{SetBackgroundColor, Color}, cursor::{Hide, Show}};
 use crossbeam::{channel, Sender};
-use rust_snake::{COLS, ROWS, renderer::Renderer, snake::{Snake, Direction}};
+use rust_snake::{COLS, ROWS, renderer::Renderer, snake::{Snake, Direction}, food::Food};
 
 
 fn main() -> Result<()> {
@@ -18,6 +18,7 @@ fn main() -> Result<()> {
 
     let mut renderer = Arc::new(Mutex::new(Renderer::new())); 
     let mut snake = Arc::new(Mutex::new(Snake::new())); 
+    let mut food = Arc::new(Mutex::new(Food::new()));
 
     {
         let mut renderer_unlocked = renderer.lock().unwrap();
@@ -29,6 +30,7 @@ fn main() -> Result<()> {
 
     let renderer_cloned_ref = Arc::clone(&renderer);
     let snake_cloned_ref = Arc::clone(&snake);
+    let food_cloned_ref = Arc::clone(&food);
 
     //main game loop
     
@@ -41,6 +43,9 @@ fn main() -> Result<()> {
         
         let mut renderer_unlocked = renderer_cloned_ref.lock().unwrap();
         let mut snake_unlocked = snake_cloned_ref.lock().unwrap();
+        let mut food_unlocked = food_cloned_ref.lock().unwrap();
+
+        food_unlocked.change_location(&snake_unlocked);
 
         while move_condition {
             let dir = direction_rx.recv_timeout(Duration::from_secs_f32(0.01)).unwrap_or(&snake_unlocked.direction);
@@ -50,7 +55,7 @@ fn main() -> Result<()> {
             }
             
             snake_unlocked.move_snake();
-            renderer_unlocked.draw_object(&mut stdout, &*snake_unlocked);
+            renderer_unlocked.draw_two_objects(&mut stdout, &*snake_unlocked, &*food_unlocked);
             renderer_unlocked.render(&mut stdout);
             thread::sleep(Duration::from_secs_f32(0.1))
         }
