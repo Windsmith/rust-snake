@@ -41,13 +41,13 @@ impl Renderer {
         return Result::Ok(());
     }
 
-    pub fn draw_object<T: TerminalDraw>(&mut self, stdout: &mut Stdout, obj: &T) {
+    pub fn draw_object<T: TerminalDraw>(&mut self, obj: &T) {
         let mut new_frame = Frame::new();
         obj.draw(&mut new_frame);
         self.unrendered_frame = Some(new_frame)
     }
 
-    pub fn draw_two_objects<T: TerminalDraw, U: TerminalDraw>(&mut self, stdout: &mut Stdout, obj1: &T, obj2: &U) {
+    pub fn draw_two_objects<T: TerminalDraw, U: TerminalDraw>(&mut self, obj1: &T, obj2: &U) {
         let mut new_frame = Frame::new();
         obj1.draw(&mut new_frame);
         obj2.draw(&mut new_frame);

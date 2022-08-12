@@ -1,6 +1,6 @@
 use std::{io::{stdout, self}, convert::TryInto, thread, time::Duration, sync::{Arc, Mutex}};
-use crossterm::{execute, Result, terminal::{EnterAlternateScreen, LeaveAlternateScreen, enable_raw_mode, disable_raw_mode, size, SetSize, Clear}, event::{read, Event, KeyCode, KeyEvent}, style::{SetBackgroundColor, Color}, cursor::{Hide, Show}};
-use crossbeam::{channel, Sender};
+use crossterm::{execute, Result, terminal::{EnterAlternateScreen, LeaveAlternateScreen, enable_raw_mode, disable_raw_mode, SetSize}, event::{read, Event, KeyCode, KeyEvent}, style::{SetBackgroundColor, Color}, cursor::{Hide, Show}};
+use crossbeam::{channel};
 use rust_snake::{COLS, ROWS, renderer::Renderer, snake::{Snake, Direction}, food::Food};
 
 
@@ -16,15 +16,15 @@ fn main() -> Result<()> {
         Hide
     )?;
 
-    let mut renderer = Arc::new(Mutex::new(Renderer::new())); 
-    let mut snake = Arc::new(Mutex::new(Snake::new())); 
-    let mut food = Arc::new(Mutex::new(Food::new()));
+    let renderer = Arc::new(Mutex::new(Renderer::new())); 
+    let snake = Arc::new(Mutex::new(Snake::new())); 
+    let food = Arc::new(Mutex::new(Food::new()));
 
     {
         let mut renderer_unlocked = renderer.lock().unwrap();
-        let mut snake_unlocked = snake.lock().unwrap();
+        let snake_unlocked = snake.lock().unwrap();
         renderer_unlocked.render(&mut stdout)?;
-        renderer_unlocked.draw_object(&mut stdout, &*snake_unlocked);
+        renderer_unlocked.draw_object(&*snake_unlocked);
         renderer_unlocked.render(&mut stdout)?;
     }
 
@@ -39,9 +39,9 @@ fn main() -> Result<()> {
 
     let (game_over_tx, game_over_rx) = channel::unbounded();
 
-    let mut render_handle = thread::spawn(move || {
+    thread::spawn(move || {
 
-        let mut move_condition = render_rx.recv().unwrap();
+        let move_condition = render_rx.recv().unwrap();
         let mut snake_speed = 0.15;
 
         let mut renderer_unlocked = renderer_cloned_ref.lock().unwrap();
@@ -58,7 +58,7 @@ fn main() -> Result<()> {
             }
             
             snake_unlocked.move_snake();
-            renderer_unlocked.draw_two_objects(&mut stdout,&*food_unlocked, &*snake_unlocked);
+            renderer_unlocked.draw_two_objects(&*food_unlocked, &*snake_unlocked);
             renderer_unlocked.render(&mut stdout);
             if snake_unlocked.handle_potential_collisions(&mut *food_unlocked, &game_over_tx)
             {   

@@ -99,13 +99,13 @@ impl Snake {
     pub fn handle_potential_collisions(&mut self, food: &mut Food, tx: &Sender<bool>) -> bool {
         let mut inc_speed = false;
         
-        if (food.x == self.x && food.y == self.y) {
+        if food.x == self.x && food.y == self.y {
             food.change_location(self);
             self.body.push(BodyPart {x: self.body[self.body.len()-1].x, y: self.body[self.body.len()-1].y});
             inc_speed = true;
         }
 
-        for index in (0..self.body.len()) {
+        for index in 0..self.body.len() {
             if self.x == self.body[index].x && self.y == self.body[index].y {
                 tx.send(true);
             }
