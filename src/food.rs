@@ -3,8 +3,8 @@ use rand::Rng;
 use crate::{snake::Snake, COLS, ROWS, TerminalDraw, frame::Frame};
 
 pub struct Food {
-    x: usize,
-    y: usize
+    pub x: usize,
+    pub y: usize
 }
 
 impl Food {
@@ -28,7 +28,7 @@ impl Food {
 
         loop {
             y = rng.gen_range(0..ROWS);
-            if !invalid_xs.contains(&y) { break; }
+            if !invalid_ys.contains(&y) { break; }
         }
 
         self.x = x;

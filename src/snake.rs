@@ -1,4 +1,6 @@
-use crate::{ROWS, COLS, TerminalDraw, frame::Frame};
+use crossbeam::{Sender};
+
+use crate::{ROWS, COLS, TerminalDraw, frame::Frame, food::Food};
 
 pub struct Snake {
     x: usize,
@@ -93,6 +95,20 @@ impl Snake {
         
     }
     */
+
+    pub fn handle_potential_collisions(&mut self, food: &mut Food, tx: &Sender<bool>) {
+        if (food.x == self.x && food.y == self.y) {
+            food.change_location(self);
+            self.body.push(BodyPart {x: self.body[self.body.len()-1].x, y: self.body[self.body.len()-1].y});
+            return 
+        }
+
+        for index in (0..self.body.len()) {
+            if self.x == self.body[index].x && self.y == self.body[index].y {
+                tx.send(true);
+            }
+        }
+    }
 
     pub fn get_xs(&self) -> Vec<usize> {
         let mut x_vals = Vec::new();

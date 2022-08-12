@@ -37,6 +37,8 @@ fn main() -> Result<()> {
     let (render_tx, render_rx) = channel::unbounded();
     let (direction_tx, direction_rx) = channel::unbounded(); 
 
+    let (game_over_tx, game_over_rx) = channel::unbounded();
+
     let mut render_handle = thread::spawn(move || {
 
         let mut move_condition = render_rx.recv().unwrap();
@@ -55,8 +57,9 @@ fn main() -> Result<()> {
             }
             
             snake_unlocked.move_snake();
-            renderer_unlocked.draw_two_objects(&mut stdout, &*snake_unlocked, &*food_unlocked);
+            renderer_unlocked.draw_two_objects(&mut stdout,&*food_unlocked, &*snake_unlocked);
             renderer_unlocked.render(&mut stdout);
+            snake_unlocked.handle_potential_collisions(&mut *food_unlocked, &game_over_tx);
             thread::sleep(Duration::from_secs_f32(0.1))
         }
     });
@@ -100,6 +103,9 @@ fn main() -> Result<()> {
                 
                 _ => continue,
             }
+
+            let game_over_check = game_over_rx.recv_timeout(Duration::from_secs_f32(0.01)).unwrap_or(false);
+            if game_over_check {break 'gameloop}
         }
     }
     
@@ -108,7 +114,6 @@ fn main() -> Result<()> {
         Show,
         LeaveAlternateScreen)?;
     disable_raw_mode()?;
-
     return Result::Ok(());
     
     
