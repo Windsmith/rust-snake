@@ -42,7 +42,8 @@ fn main() -> Result<()> {
     let mut render_handle = thread::spawn(move || {
 
         let mut move_condition = render_rx.recv().unwrap();
-        
+        let mut snake_speed = 0.15;
+
         let mut renderer_unlocked = renderer_cloned_ref.lock().unwrap();
         let mut snake_unlocked = snake_cloned_ref.lock().unwrap();
         let mut food_unlocked = food_cloned_ref.lock().unwrap();
@@ -59,8 +60,12 @@ fn main() -> Result<()> {
             snake_unlocked.move_snake();
             renderer_unlocked.draw_two_objects(&mut stdout,&*food_unlocked, &*snake_unlocked);
             renderer_unlocked.render(&mut stdout);
-            snake_unlocked.handle_potential_collisions(&mut *food_unlocked, &game_over_tx);
-            thread::sleep(Duration::from_secs_f32(0.1))
+            if snake_unlocked.handle_potential_collisions(&mut *food_unlocked, &game_over_tx)
+            {   
+                if snake_speed < 0.05 { snake_speed -= 0.002; }
+                else { snake_speed -= 0.01; }
+            };
+            thread::sleep(Duration::from_secs_f32(snake_speed))
         }
     });
 

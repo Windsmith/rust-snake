@@ -96,11 +96,13 @@ impl Snake {
     }
     */
 
-    pub fn handle_potential_collisions(&mut self, food: &mut Food, tx: &Sender<bool>) {
+    pub fn handle_potential_collisions(&mut self, food: &mut Food, tx: &Sender<bool>) -> bool {
+        let mut inc_speed = false;
+        
         if (food.x == self.x && food.y == self.y) {
             food.change_location(self);
             self.body.push(BodyPart {x: self.body[self.body.len()-1].x, y: self.body[self.body.len()-1].y});
-            return 
+            inc_speed = true;
         }
 
         for index in (0..self.body.len()) {
@@ -108,6 +110,8 @@ impl Snake {
                 tx.send(true);
             }
         }
+
+        inc_speed
     }
 
     pub fn get_xs(&self) -> Vec<usize> {
